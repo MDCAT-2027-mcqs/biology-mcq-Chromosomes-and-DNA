@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Biology MCQ Test</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg: #f3f6f4;
+    --panel: #ffffff;
+    --ink: #16302b;
+    --ink-soft: #4d635d;
+    --line: #d9e3df;
+    --teal: #1f6f5c;
+    --teal-dark: #154d40;
+    --red: #b3452f;
+    --green-soft: #e2efe9;
+    --grey-soft: #eef1ef;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  h1,h2{font-family:Georgia,"Times New Roman",serif; margin:0 0 .3em 0; color:var(--teal-dark);}
+  .wrap{max-width:1100px; margin:0 auto; padding:28px 18px 60px 18px;}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:22px; margin-bottom:16px;}
+  label{display:block; font-size:.85rem; font-weight:600; color:var(--ink-soft); margin-bottom:5px;}
+  input[type=text], input[type=email], input[type=password], select{
+    width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:8px;
+    font-size:1rem; background:#fbfdfc; color:var(--ink);
+  }
+  button{
+    font-family:inherit; font-size:.92rem; font-weight:600; border:none; border-radius:8px;
+    padding:10px 18px; cursor:pointer;
+  }
+  .btn-primary{background:var(--teal); color:#fff;}
+  .btn-primary:hover{background:var(--teal-dark);}
+  .btn-secondary{background:var(--grey-soft); color:var(--teal-dark); border:1.5px solid var(--line);}
+  .btn-secondary:hover{background:#e3e9e6;}
+  .login-box{max-width:380px; margin:80px auto;}
+  .login-box input{margin-bottom:14px;}
+  .error-msg{color:var(--red); font-size:.88rem; margin:-6px 0 14px 0;}
+  .toolbar{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px;}
+  .toolbar .field{flex:1; min-width:160px;}
+  .toolbar .actions{display:flex; gap:8px;}
+  table{width:100%; border-collapse:collapse; font-size:.88rem;}
+  th, td{text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap;}
+  th{color:var(--ink-soft); font-size:.76rem; text-transform:uppercase; letter-spacing:.03em;}
+  tr:hover td{background:var(--green-soft);}
+  .status-tag{padding:3px 9px; border-radius:20px; font-size:.76rem; font-weight:700;}
+  .status-complete{background:var(--green-soft); color:var(--teal-dark);}
+  .status-progress{background:#f4e3c8; color:#7a5217;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;}
+  .small-note{font-size:.82rem; color:var(--ink-soft);}
+  .table-scroll{overflow-x:auto;}
+  .empty-state{text-align:center; padding:40px; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+
+<script>
+const SUPABASE_URL = 'https://ffhectlvigfdhwcuetee.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_5sxJLvZqy_Q53I0GRuefcQ_Ii1z7m9a';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const app = document.getElementById('app');
+
+let state = {
+  screen: 'loading', // loading | login | dashboard
+  loginError: '',
+  rows: [],
+  search: '',
+  districtFilter: 'all',
+  loadingRows: false,
+  fetchError: ''
+};
+
+async function init(){
+  const { data } = await sb.auth.getSession();
+  if(data && data.session){
+    state.screen = 'dashboard';
+    render();
+    await fetchRows();
+  } else {
+    state.screen = 'login';
+    render();
+  }
+}
+
+sb.auth.onAuthStateChange((event, session)=>{
+  if(event === 'SIGNED_IN'){
+    state.screen = 'dashboard';
+    render();
+    fetchRows();
+  } else if(event === 'SIGNED_OUT'){
+    state.screen = 'login';
+    state.rows = [];
+    render();
+  }
+});
+
+function render(){
+  if(state.screen === 'loading'){ app.innerHTML = `<div class="empty-state">Loading…</div>`; return; }
+  if(state.screen === 'login') return renderLogin();
+  if(state.screen === 'dashboard') return renderDashboard();
+}
+
+// ---------------- LOGIN ----------------
+function renderLogin(){
+  app.innerHTML = `
+    <div class="panel login-box">
+      <h1 style="font-size:1.4rem;">Admin Login</h1>
+      <div class="small-note" style="margin-bottom:16px;">Sign in with the teacher/admin account created in Supabase Auth.</div>
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@school.edu">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Password">
+      ${state.loginError ? `<div class="error-msg">${state.loginError}</div>` : ''}
+      <button class="btn-primary" id="loginBtn" style="width:100%;">Log In</button>
+    </div>
+  `;
+  document.getElementById('loginBtn').onclick = doLogin;
+  document.getElementById('password').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+}
+
+async function doLogin(){
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  if(!email || !password){ state.loginError = 'Enter both email and password.'; render(); return; }
+  state.loginError = '';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){
+    state.loginError = error.message;
+    render();
+  }
+  // success handled by onAuthStateChange
+}
+
+// ---------------- DASHBOARD ----------------
+async function fetchRows(){
+  state.loadingRows = true;
+  state.fetchError = '';
+  render();
+  const { data, error } = await sb
+    .from('submissions')
+    .select('*')
+    .order('started_at', { ascending: false });
+  state.loadingRows = false;
+  if(error){
+    state.fetchError = error.message;
+    state.rows = [];
+  } else {
+    state.rows = data || [];
+  }
+  render();
+}
+
+function partScoreLabel(partResults, idx){
+  const r = partResults ? partResults[idx] : null;
+  if(!r) return '—';
+  return `${r.score}/${r.total}`;
+}
+
+function getDistricts(rows){
+  const set = new Set(rows.map(r=>r.district).filter(Boolean));
+  return Array.from(set).sort();
+}
+
+function filteredRows(){
+  let rows = state.rows;
+  if(state.districtFilter !== 'all'){
+    rows = rows.filter(r=>r.district === state.districtFilter);
+  }
+  if(state.search.trim()){
+    const q = state.search.trim().toLowerCase();
+    rows = rows.filter(r=>
+      (r.name||'').toLowerCase().includes(q) ||
+      (r.district||'').toLowerCase().includes(q) ||
+      (r.email||'').toLowerCase().includes(q)
+    );
+  }
+  return rows;
+}
+
+function renderDashboard(){
+  const rows = filteredRows();
+  const districts = getDistricts(state.rows);
+
+  app.innerHTML = `
+    <div class="topbar">
+      <h1 style="font-size:1.5rem;">Student Results — Chromosomes &amp; DNA MCQ Test</h1>
+      <button class="btn-secondary" id="logoutBtn">Log Out</button>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div class="field">
+          <label>Search (name, district, or email)</label>
+          <input type="text" id="searchInput" placeholder="Type to search…" value="${state.search}">
+        </div>
+        <div class="field" style="max-width:220px;">
+          <label>District</label>
+          <select id="districtSelect">
+            <option value="all">All districts</option>
+            ${districts.map(d=>`<option value="${d}" ${state.districtFilter===d?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="actions">
+          <button class="btn-secondary" id="refreshBtn">Refresh</button>
+          <button class="btn-primary" id="exportBtn">Export CSV</button>
+        </div>
+      </div>
+      <div class="small-note">${state.loadingRows ? 'Loading submissions…' : `${rows.length} of ${state.rows.length} submission(s) shown`}</div>
+      ${state.fetchError ? `<div class="error-msg">Could not load data: ${state.fetchError}</div>` : ''}
+    </div>
+
+    <div class="panel table-scroll">
+      ${rows.length === 0 && !state.loadingRows ? `<div class="empty-state">No submissions match your filters yet.</div>` : `
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th><th>District</th><th>Email</th>
+            <th>Part 1</th><th>Part 2</th><th>Part 3</th>
+            <th>Total</th><th>%</th><th>Status</th>
+            <th>Started</th><th>Submitted</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r=>`
+            <tr>
+              <td>${r.name||''}</td>
+              <td>${r.district||''}</td>
+              <td>${r.email||'—'}</td>
+              <td>${partScoreLabel(r.part_results,0)}</td>
+              <td>${partScoreLabel(r.part_results,1)}</td>
+              <td>${partScoreLabel(r.part_results,2)}</td>
+              <td>${r.total_score!==null && r.total_score!==undefined ? r.total_score+'/150' : '—'}</td>
+              <td>${r.total_percentage!==null && r.total_percentage!==undefined ? r.total_percentage+'%' : '—'}</td>
+              <td>${r.submitted_at ? '<span class="status-tag status-complete">Completed</span>' : '<span class="status-tag status-progress">In Progress</span>'}</td>
+              <td>${r.started_at ? new Date(r.started_at).toLocaleString() : ''}</td>
+              <td>${r.submitted_at ? new Date(r.submitted_at).toLocaleString() : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      `}
+    </div>
+  `;
+
+  document.getElementById('logoutBtn').onclick = async ()=>{ await sb.auth.signOut(); };
+  document.getElementById('refreshBtn').onclick = fetchRows;
+  document.getElementById('searchInput').addEventListener('input', e=>{ state.search = e.target.value; render(); });
+  document.getElementById('districtSelect').addEventListener('change', e=>{ state.districtFilter = e.target.value; render(); });
+  document.getElementById('exportBtn').onclick = ()=> exportCSV(rows);
+}
+
+function csvEscape(val){
+  if(val === null || val === undefined) return '';
+  const s = String(val);
+  if(/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+  return s;
+}
+
+function exportCSV(rows){
+  const headers = ['Name','District','Email','Part1 Score','Part2 Score','Part3 Score','Total Score','Percentage','Status','Started At','Submitted At'];
+  const lines = [headers.join(',')];
+  rows.forEach(r=>{
+    lines.push([
+      csvEscape(r.name),
+      csvEscape(r.district),
+      csvEscape(r.email),
+      csvEscape(partScoreLabel(r.part_results,0)),
+      csvEscape(partScoreLabel(r.part_results,1)),
+      csvEscape(partScoreLabel(r.part_results,2)),
+      csvEscape(r.total_score!==null && r.total_score!==undefined ? r.total_score+'/150' : ''),
+      csvEscape(r.total_percentage!==null && r.total_percentage!==undefined ? r.total_percentage+'%' : ''),
+      csvEscape(r.submitted_at ? 'Completed' : 'In Progress'),
+      csvEscape(r.started_at ? new Date(r.started_at).toLocaleString() : ''),
+      csvEscape(r.submitted_at ? new Date(r.submitted_at).toLocaleString() : '')
+    ].join(','));
+  });
+  const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mcq-results-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+init();
+</script>
+</body>
+</html>

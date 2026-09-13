@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biology — Chromosomes and DNA MCQ Test</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg: #f3f6f4;
+    --panel: #ffffff;
+    --ink: #16302b;
+    --ink-soft: #4d635d;
+    --line: #d9e3df;
+    --teal: #1f6f5c;
+    --teal-dark: #154d40;
+    --amber: #c1852b;
+    --amber-soft: #f4e3c8;
+    --red: #b3452f;
+    --red-soft: #fbe6e0;
+    --green: #1f6f5c;
+    --green-soft: #e2efe9;
+    --grey-soft: #eef1ef;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight:600;
+    margin:0 0 .3em 0;
+    color:var(--teal-dark);
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:28px 18px 80px 18px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    margin-bottom:16px;
+  }
+  .hero{
+    text-align:left;
+    border-bottom:3px solid var(--teal);
+    padding-bottom:16px;
+    margin-bottom:20px;
+  }
+  .hero h1{font-size:1.7rem;}
+  .hero .sub{color:var(--ink-soft); font-size:.98rem;}
+  .meta-row{
+    display:flex;
+    gap:14px;
+    margin-top:14px;
+    flex-wrap:wrap;
+  }
+  .meta-chip{
+    background:var(--green-soft);
+    color:var(--teal-dark);
+    border-radius:6px;
+    padding:6px 12px;
+    font-size:.86rem;
+    font-weight:600;
+  }
+  label{
+    display:block;
+    font-size:.85rem;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+  }
+  input[type=text]{
+    width:100%;
+    padding:11px 12px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    font-size:1rem;
+    margin-bottom:16px;
+    background:#fbfdfc;
+    color:var(--ink);
+  }
+  input[type=text]:focus{outline:2px solid var(--teal); border-color:var(--teal);}
+  button{
+    font-family:inherit;
+    font-size:1rem;
+    font-weight:600;
+    border:none;
+    border-radius:8px;
+    padding:12px 20px;
+    cursor:pointer;
+    transition:transform .06s ease, box-shadow .15s ease;
+  }
+  button:active{transform:scale(0.98);}
+  button:focus-visible{outline:2px solid var(--teal-dark); outline-offset:2px;}
+  .btn-primary{ background:var(--teal); color:#fff; width:100%;}
+  .btn-primary:hover{background:var(--teal-dark);}
+  .btn-primary:disabled{background:#a9beb8; cursor:not-allowed;}
+  .btn-secondary{ background:var(--grey-soft); color:var(--teal-dark); border:1.5px solid var(--line);}
+  .btn-secondary:hover{background:#e3e9e6;}
+  .btn-outline{ background:transparent; color:var(--teal-dark); border:1.5px solid var(--teal);}
+  .btn-outline:hover{background:var(--green-soft);}
+  .btn-small{ padding:7px 12px; font-size:.85rem;}
+
+  .part-cards{display:flex; flex-direction:column; gap:10px; margin-top:8px;}
+  .part-card{
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:.92rem;
+    color:var(--ink-soft);
+  }
+  .part-card b{color:var(--ink);}
+
+  /* Progress bar */
+  .progress-bar-outer{
+    background:var(--grey-soft);
+    border-radius:6px;
+    height:10px;
+    overflow:hidden;
+    margin:10px 0 4px 0;
+  }
+  .progress-bar-inner{
+    background:var(--teal);
+    height:100%;
+    transition:width .25s ease;
+  }
+  .progress-label{font-size:.82rem; color:var(--ink-soft); display:flex; justify-content:space-between;}
+
+  /* Question nav grid */
+  .qnav{
+    display:grid;
+    grid-template-columns:repeat(10, 1fr);
+    gap:6px;
+    margin:14px 0;
+  }
+  @media(max-width:480px){ .qnav{grid-template-columns:repeat(8,1fr);} }
+  .qnav-btn{
+    aspect-ratio:1;
+    border-radius:6px;
+    border:1.5px solid var(--line);
+    background:#fbfdfc;
+    color:var(--ink-soft);
+    font-size:.78rem;
+    font-weight:600;
+    cursor:pointer;
+    padding:0;
+  }
+  .qnav-btn.answered{ background:var(--green-soft); border-color:var(--teal); color:var(--teal-dark);}
+  .qnav-btn.current{ background:var(--teal); border-color:var(--teal); color:#fff;}
+
+  .qcard{
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+  .qnum{
+    font-size:.8rem;
+    font-weight:700;
+    color:var(--teal);
+    letter-spacing:.02em;
+    margin-bottom:6px;
+  }
+  .qtext{
+    font-size:1.08rem;
+    font-weight:600;
+    margin-bottom:16px;
+    color:var(--ink);
+  }
+  .opt{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:11px 13px;
+    margin-bottom:9px;
+    cursor:pointer;
+    background:#fbfdfc;
+  }
+  .opt:hover{border-color:var(--teal);}
+  .opt.selected{
+    border-color:var(--teal);
+    background:var(--green-soft);
+  }
+  .opt input{margin-top:3px;}
+  .opt-letter{
+    font-weight:700;
+    color:var(--teal-dark);
+    min-width:18px;
+  }
+  .qnav-footer{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:16px;
+  }
+  .qnav-footer button{flex:1;}
+
+  .sticky-bar{
+    position:sticky;
+    bottom:0;
+    background:var(--panel);
+    border-top:1px solid var(--line);
+    padding:12px 0;
+    margin-top:10px;
+  }
+
+  /* Results */
+  .stat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:14px 0;
+  }
+  .stat-box{
+    background:var(--grey-soft);
+    border-radius:8px;
+    padding:14px;
+    text-align:center;
+  }
+  .stat-box .num{font-size:1.5rem; font-weight:700; color:var(--teal-dark); font-family:Georgia,serif;}
+  .stat-box .lbl{font-size:.78rem; color:var(--ink-soft); margin-top:2px;}
+  .stat-box.correct .num{color:var(--teal);}
+  .stat-box.wrong .num{color:var(--red);}
+
+  .pct-badge{
+    display:inline-block;
+    background:var(--amber-soft);
+    color:#7a5217;
+    font-weight:700;
+    font-size:1.1rem;
+    padding:8px 18px;
+    border-radius:30px;
+    margin:8px 0 4px 0;
+  }
+
+  /* Review */
+  .filter-row{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0;}
+  .filter-btn{
+    background:var(--grey-soft);
+    border:1.5px solid var(--line);
+    color:var(--ink-soft);
+    border-radius:20px;
+    padding:6px 14px;
+    font-size:.82rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .filter-btn.active{background:var(--teal); color:#fff; border-color:var(--teal);}
+  .review-item{
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    padding:14px;
+    margin-bottom:10px;
+  }
+  .review-item .rq{font-size:.95rem; font-weight:600; margin-bottom:8px;}
+  .review-badge{font-size:.8rem; font-weight:700; margin-bottom:8px; display:inline-block;}
+  .review-badge.correct{color:var(--teal);}
+  .review-badge.wrong{color:var(--red);}
+  .review-badge.blank{color:var(--ink-soft);}
+  .review-opt{font-size:.88rem; padding:6px 10px; border-radius:6px; margin-bottom:5px;}
+  .review-opt.is-correct{background:var(--green-soft); color:var(--teal-dark); font-weight:600;}
+  .review-opt.is-wrong{background:var(--red-soft); color:var(--red); font-weight:600;}
+
+  .divider{border:none; border-top:1px solid var(--line); margin:18px 0;}
+  .small-note{font-size:.82rem; color:var(--ink-soft);}
+  .locked-tag{
+    font-size:.75rem;
+    background:var(--grey-soft);
+    color:var(--ink-soft);
+    padding:3px 9px;
+    border-radius:20px;
+    font-weight:600;
+  }
+  .part-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+
+  .modal-backdrop{
+    position:fixed; inset:0; background:rgba(15,30,26,.45);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; z-index:50;
+  }
+  .modal{
+    background:#fff; border-radius:12px; padding:22px; max-width:380px; width:100%;
+  }
+  .modal h3{margin-bottom:8px;}
+  .modal p{color:var(--ink-soft); font-size:.92rem; margin-bottom:18px;}
+  .modal-actions{display:flex; gap:10px;}
+  .modal-actions button{flex:1;}
+
+  .center-text{text-align:center;}
+  .loading{text-align:center; padding:60px 20px; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+<div id="app" class="wrap"></div>
+
+<script>
+const QUESTIONS = [{"q": "Chromosomal theory of inheritance was proposed by:", "o": ["Watson and Crick", "Sutton and Boveri", "Meselson and Stahl", "Griffith"], "a": 1}, {"q": "The chromosomal theory states that genes are located on:", "o": ["Ribosomes", "Chromosomes", "Lysosomes", "Centrioles"], "a": 1}, {"q": "Walter Sutton worked mainly on:", "o": ["Grasshoppers", "Bacteria", "Viruses", "Pea plants"], "a": 0}, {"q": "Theodor Boveri was a:", "o": ["Geneticist", "Chemist", "Botanist", "Physicist"], "a": 0}, {"q": "Sutton and Boveri independently developed the:", "o": ["Cell theory", "Chromosomal theory of inheritance", "Central dogma", "Operon model"], "a": 1}, {"q": "Chromosomes occur in the:", "o": ["Cytoplasm", "Nucleus", "Cell wall", "Ribosome"], "a": 1}, {"q": "Genes are functional units of:", "o": ["Heredity", "Respiration", "Digestion", "Excretion"], "a": 0}, {"q": "Alternative forms of a gene are called:", "o": ["Codons", "Alleles", "Chromatids", "Nucleotides"], "a": 1}, {"q": "The physical basis of heredity is mainly associated with:", "o": ["Chromosomes", "Golgi bodies", "Vacuoles", "Cell membrane"], "a": 0}, {"q": "During cell division, chromosomes become:", "o": ["Less visible", "Highly condensed", "Dissolved", "Invisible permanently"], "a": 1}, {"q": "A chromosome consists mainly of DNA and:", "o": ["Lipids", "Proteins", "Glucose", "RNA only"], "a": 1}, {"q": "Histone proteins are associated with:", "o": ["DNA", "Lipids", "Carbohydrates", "ATP"], "a": 0}, {"q": "The basic unit of chromatin is the:", "o": ["Nucleosome", "Ribosome", "Codon", "Centrosome"], "a": 0}, {"q": "DNA is wrapped around:", "o": ["Ribosomal proteins", "Histone proteins", "Enzymes", "Cellulose"], "a": 1}, {"q": "The DNA-protein complex in chromosomes is called:", "o": ["Chromatin", "Cytoplasm", "Nucleoplasm", "Matrix"], "a": 0}, {"q": "DNA stands for:", "o": ["Deoxyribonucleic acid", "Dioxyribose nucleic acid", "Deoxyribosomal acid", "Dinucleic acid"], "a": 1}, {"q": "The hereditary material in most organisms is:", "o": ["Protein", "DNA", "Lipid", "Carbohydrate"], "a": 1}, {"q": "Griffith performed his famous experiment on:", "o": ["E. coli", "Streptococcus pneumoniae", "Tobacco mosaic virus", "Drosophila"], "a": 1}, {"q": "Griffith observed the phenomenon of:", "o": ["Translation", "Transformation", "Transcription", "Replication"], "a": 1}, {"q": "In Griffith's experiment, S strain bacteria were:", "o": ["Rough and non-virulent", "Smooth and virulent", "Rough and virulent", "Non-bacterial"], "a": 1}, {"q": "R strain bacteria were:", "o": ["Smooth", "Rough", "Viral", "Fungal"], "a": 1}, {"q": "The S strain was pathogenic because of its:", "o": ["Capsule", "Flagella", "Ribosomes", "Cell wall only"], "a": 0}, {"q": "Heat-killed S bacteria were:", "o": ["Virulent", "Non-virulent", "More virulent", "Viral"], "a": 1}, {"q": "Griffith concluded that some substance from dead S bacteria transformed:", "o": ["S cells into R cells", "R cells into S cells", "DNA into RNA", "RNA into DNA"], "a": 1}, {"q": "The transforming principle was later identified as:", "o": ["Protein", "DNA", "Lipid", "RNA"], "a": 1}, {"q": "Avery, MacLeod and McCarty investigated the:", "o": ["Transforming principle", "Genetic code", "Ribosome", "Cell cycle"], "a": 0}, {"q": "Avery and colleagues showed that the transforming substance was:", "o": ["Protein", "DNA", "RNA", "Carbohydrate"], "a": 1}, {"q": "Hershey and Chase used ______ to study hereditary material.", "o": ["Pea plants", "Bacteriophages", "Grasshoppers", "Fruit flies"], "a": 1}, {"q": "A bacteriophage infects:", "o": ["Plants", "Bacteria", "Fungi", "Humans only"], "a": 1}, {"q": "In Hershey-Chase experiment, DNA was labelled with:", "o": ["³²P", "³⁵S", "¹⁴C", "¹⁵N"], "a": 0}, {"q": "Protein was labelled with:", "o": ["³²P", "³⁵S", "¹⁵N", "¹⁴C"], "a": 1}, {"q": "Phosphorus is present in:", "o": ["DNA", "Protein only", "Lipids only", "Starch"], "a": 0}, {"q": "Sulfur is present in some:", "o": ["DNA bases", "Amino acids", "Sugars", "Phosphates"], "a": 1}, {"q": "Hershey and Chase concluded that the genetic material entering bacteria was:", "o": ["Protein", "DNA", "Lipid", "RNA"], "a": 1}, {"q": "The experiments of Griffith, Avery and Hershey-Chase supported DNA as:", "o": ["Energy source", "Hereditary material", "Cell membrane", "Enzyme"], "a": 1}, {"q": "The double helix model of DNA was proposed by:", "o": ["Griffith", "Watson and Crick", "Sutton and Boveri", "Meselson and Stahl"], "a": 1}, {"q": "Watson and Crick proposed the DNA model in:", "o": ["1944", "1953", "1960", "1970"], "a": 1}, {"q": "DNA has a:", "o": ["Single-stranded structure only", "Double-stranded structure", "Triple-stranded structure", "Protein structure"], "a": 1}, {"q": "Each strand of DNA is made up of:", "o": ["Amino acids", "Nucleotides", "Fatty acids", "Glucose molecules"], "a": 1}, {"q": "A nucleotide contains:", "o": ["Sugar, phosphate and nitrogenous base", "Protein, sugar and lipid", "Amino acid and phosphate", "Sugar and protein only"], "a": 0}, {"q": "The sugar present in DNA is:", "o": ["Ribose", "Deoxyribose", "Glucose", "Fructose"], "a": 1}, {"q": "The nitrogenous bases in DNA are:", "o": ["A, T, G and C", "A, U, G and C", "A, T, U and G", "U, T, C and G"], "a": 0}, {"q": "Adenine is represented by:", "o": ["A", "T", "G", "C"], "a": 0}, {"q": "Guanine is represented by:", "o": ["A", "T", "G", "U"], "a": 2}, {"q": "Cytosine is represented by:", "o": ["C", "G", "A", "T"], "a": 0}, {"q": "Thymine is represented by:", "o": ["U", "T", "C", "G"], "a": 1}, {"q": "Adenine pairs with:", "o": ["Cytosine", "Guanine", "Thymine", "Uracil"], "a": 2}, {"q": "Guanine pairs with:", "o": ["Adenine", "Cytosine", "Thymine", "Uracil"], "a": 1}, {"q": "A-T pair is held together by:", "o": ["One hydrogen bond", "Two hydrogen bonds", "Three hydrogen bonds", "Four hydrogen bonds"], "a": 1}, {"q": "G-C pair is held together by:", "o": ["One hydrogen bond", "Two hydrogen bonds", "Three hydrogen bonds", "Four hydrogen bonds"], "a": 2}, {"q": "The two DNA strands are:", "o": ["Parallel", "Antiparallel", "Identical in direction", "Circular only"], "a": 1}, {"q": "Complementary base pairing means:", "o": ["A pairs with G", "A pairs with T", "C pairs with A", "G pairs with T"], "a": 1}, {"q": "The backbone of DNA consists of:", "o": ["Bases only", "Sugar and phosphate", "Proteins", "Amino acids"], "a": 1}, {"q": "The bases project toward the:", "o": ["Outside of DNA", "Inside of DNA", "Cytoplasm", "Cell membrane"], "a": 1}, {"q": "The shape of DNA molecule is commonly described as:", "o": ["Single chain", "Double helix", "Sheet", "Cube"], "a": 1}, {"q": "DNA replication means:", "o": ["Breakdown of DNA", "Formation of a new DNA molecule", "Formation of protein", "Formation of RNA only"], "a": 1}, {"q": "DNA replication occurs before:", "o": ["Cell division", "Digestion", "Respiration", "Photosynthesis"], "a": 0}, {"q": "DNA replication is:", "o": ["Conservative", "Semi-conservative", "Dispersive only", "Random"], "a": 1}, {"q": "In semi-conservative replication, each daughter DNA contains:", "o": ["Two old strands", "Two new strands", "One old and one new strand", "No old strand"], "a": 1}, {"q": "Meselson and Stahl provided evidence for:", "o": ["Conservative replication", "Semi-conservative replication", "Protein replication", "RNA translation"], "a": 2}, {"q": "Meselson and Stahl used:", "o": ["¹⁵N", "³²P", "³⁵S", "¹⁴C"], "a": 1}, {"q": "The bacterium used by Meselson and Stahl was:", "o": ["E. coli", "Streptococcus", "Bacillus", "Rhizobium"], "a": 0}, {"q": "DNA replication begins when the double helix:", "o": ["Becomes protein", "Unwinds", "Disappears", "Is translated"], "a": 1}, {"q": "The enzyme that unwinds DNA is:", "o": ["Ligase", "Helicase", "Polymerase", "Ribosome"], "a": 1}, {"q": "Helicase breaks:", "o": ["Peptide bonds", "Hydrogen bonds between DNA strands", "Phosphodiester bonds only", "Glycosidic bonds"], "a": 1}, {"q": "DNA polymerase is responsible mainly for:", "o": ["DNA synthesis", "Protein digestion", "RNA digestion", "Lipid synthesis"], "a": 0}, {"q": "New DNA nucleotides are joined by:", "o": ["DNA polymerase", "Helicase", "Ribosome", "RNA polymerase"], "a": 0}, {"q": "DNA synthesis occurs in the:", "o": ["3′ to 5′ direction", "5′ to 3′ direction", "Both directions on one strand", "Random direction"], "a": 1}, {"q": "The leading strand is synthesized:", "o": ["Continuously", "Discontinuously", "Without nucleotides", "Only after translation"], "a": 0}, {"q": "The lagging strand is synthesized:", "o": ["Continuously", "Discontinuously", "Without enzymes", "As protein"], "a": 1}, {"q": "Short DNA fragments on lagging strand are called:", "o": ["Codons", "Okazaki fragments", "Anticodons", "Introns"], "a": 1}, {"q": "Okazaki fragments are joined by:", "o": ["Helicase", "DNA ligase", "RNA polymerase", "Ribosome"], "a": 1}, {"q": "DNA replication requires a:", "o": ["Template strand", "Protein only", "Lipid template", "Cell wall"], "a": 0}, {"q": "Primase helps in formation of:", "o": ["RNA primer", "Protein primer", "DNA ribosome", "Amino acid"], "a": 0}, {"q": "The primer provides a:", "o": ["Starting point for DNA synthesis", "Stop codon", "Ribosome", "Protein chain"], "a": 0}, {"q": "During replication, each original DNA strand acts as a:", "o": ["Template", "Ribosome", "Codon", "Protein"], "a": 0}, {"q": "The result of DNA replication is:", "o": ["Two identical DNA molecules", "One DNA molecule", "Four RNA molecules", "Two proteins"], "a": 0}, {"q": "The base sequence of newly synthesized DNA is determined by:", "o": ["Complementary base pairing", "Random pairing", "Protein synthesis", "Mutation only"], "a": 0}, {"q": "DNA replication ensures that genetic information is:", "o": ["Lost", "Passed to daughter cells", "Converted into lipid", "Destroyed"], "a": 0}, {"q": "The two DNA strands separate during replication due to breaking of:", "o": ["Hydrogen bonds", "Peptide bonds", "Ionic bonds", "Ester bonds"], "a": 1}, {"q": "Gene expression is the process by which information in a gene is used to produce:", "o": ["Functional product", "Lipid only", "Water", "Minerals"], "a": 0}, {"q": "The central dogma describes the flow of genetic information from:", "o": ["Protein → RNA → DNA", "DNA → RNA → Protein", "RNA → DNA → Protein only", "Protein → DNA → RNA"], "a": 1}, {"q": "DNA is first used to make:", "o": ["RNA", "Protein directly", "Lipid", "Glucose"], "a": 0}, {"q": "Formation of RNA from DNA is called:", "o": ["Translation", "Transcription", "Replication", "Mutation"], "a": 1}, {"q": "Formation of protein from mRNA is called:", "o": ["Transcription", "Translation", "Replication", "Transformation"], "a": 1}, {"q": "The main RNA involved in carrying genetic information from DNA is:", "o": ["mRNA", "tRNA", "rRNA", "miRNA"], "a": 0}, {"q": "mRNA stands for:", "o": ["Messenger RNA", "Molecular RNA", "Main RNA", "Modified RNA"], "a": 0}, {"q": "tRNA carries:", "o": ["Amino acids", "DNA", "Ribosomes", "Lipids"], "a": 0}, {"q": "rRNA is an important component of:", "o": ["Ribosomes", "Chromosomes only", "Cell membrane", "Lysosomes"], "a": 0}, {"q": "Protein synthesis occurs on:", "o": ["Ribosomes", "Lysosomes", "Golgi bodies only", "Centrioles"], "a": 0}, {"q": "Transcription produces:", "o": ["RNA", "DNA", "Protein directly", "Lipid"], "a": 0}, {"q": "The enzyme responsible for transcription is:", "o": ["DNA polymerase", "RNA polymerase", "DNA ligase", "Helicase"], "a": 1}, {"q": "During transcription, the DNA molecule:", "o": ["Acts as template", "Becomes protein", "Is destroyed", "Becomes ribosome"], "a": 0}, {"q": "In RNA, thymine is replaced by:", "o": ["Cytosine", "Uracil", "Guanine", "Adenine"], "a": 1}, {"q": "In RNA, adenine pairs with:", "o": ["Thymine", "Uracil", "Cytosine", "Guanine"], "a": 1}, {"q": "The DNA strand used for RNA synthesis is called the:", "o": ["Template strand", "Coding protein", "Ribosomal strand", "Anticodon"], "a": 0}, {"q": "RNA polymerase moves along DNA and:", "o": ["Synthesizes RNA", "Synthesizes protein", "Breaks proteins", "Makes lipids"], "a": 0}, {"q": "Transcription produces an RNA molecule complementary to the:", "o": ["Template DNA strand", "Protein strand", "Ribosome", "tRNA only"], "a": 0}, {"q": "In eukaryotes, transcription mainly occurs in the:", "o": ["Nucleus", "Ribosome", "Cytoplasm only", "Golgi apparatus"], "a": 0}, {"q": "Before translation in eukaryotes, mRNA undergoes:", "o": ["Processing", "Replication", "Digestion", "Photosynthesis"], "a": 0}, {"q": "Eukaryotic primary RNA transcript contains:", "o": ["Introns and exons", "Amino acids only", "Codons only", "Proteins only"], "a": 0}, {"q": "Introns are:", "o": ["Non-coding regions removed from RNA", "Amino acids", "Ribosomes", "DNA bases only"], "a": 0}, {"q": "Exons are generally:", "o": ["Expressed/coding regions retained in mature mRNA", "Removed proteins", "Lipids", "Enzymes"], "a": 0}, {"q": "Removal of introns is called:", "o": ["Splicing", "Replication", "Translation", "Mutation"], "a": 0}, {"q": "Mature mRNA is formed after:", "o": ["RNA processing", "DNA destruction", "Protein digestion", "Cell division only"], "a": 0}, {"q": "A genetic code is a sequence of:", "o": ["Nucleotides specifying amino acids", "Lipids", "Proteins only", "Sugars only"], "a": 0}, {"q": "A codon consists of:", "o": ["One nucleotide", "Two nucleotides", "Three nucleotides", "Four nucleotides"], "a": 0}, {"q": "A codon is present on:", "o": ["mRNA", "tRNA only", "Protein", "Ribosome only"], "a": 2}, {"q": "The anticodon is present on:", "o": ["mRNA", "tRNA", "DNA only", "Protein"], "a": 0}, {"q": "The genetic code is called triplet because:", "o": ["Three genes form one codon", "Three nucleotides form one codon", "Three proteins form one gene", "Three chromosomes form one gene"], "a": 1}, {"q": "There are ______ possible codons.", "o": ["20", "32", "64", "46"], "a": 1}, {"q": "The number of amino acids commonly used in protein synthesis is:", "o": ["4", "20", "64", "46"], "a": 0}, {"q": "The genetic code is generally:", "o": ["Universal", "Different in every cell", "Made of proteins", "Double-stranded"], "a": 0}, {"q": "The genetic code is called degenerate because:", "o": ["One amino acid may have more than one codon", "One codon codes for many amino acids", "It contains no nucleotides", "It changes every second"], "a": 1}, {"q": "The genetic code is:", "o": ["Overlapping", "Non-overlapping", "Protein-based", "Lipid-based"], "a": 1}, {"q": "A stop codon signals:", "o": ["Start of replication", "Termination of translation", "Start of transcription", "DNA repair"], "a": 0}, {"q": "Which is a stop codon?", "o": ["AUG", "UAA", "UGG", "GCU"], "a": 0}, {"q": "Which is another stop codon?", "o": ["UAG", "AUG", "GGG", "CCA"], "a": 1}, {"q": "The third stop codon is:", "o": ["UGA", "AUG", "AAA", "GUA"], "a": 0}, {"q": "The usual start codon is:", "o": ["UAA", "AUG", "UGA", "UAG"], "a": 0}, {"q": "Translation is the formation of:", "o": ["DNA from RNA", "Protein from mRNA", "RNA from DNA", "DNA from protein"], "a": 0}, {"q": "Translation occurs on:", "o": ["Ribosomes", "Nucleus only", "Lysosomes", "Golgi bodies only"], "a": 1}, {"q": "Amino acids are carried to ribosomes by:", "o": ["mRNA", "tRNA", "rRNA", "DNA"], "a": 0}, {"q": "The anticodon of tRNA pairs with the:", "o": ["Gene", "Codon of mRNA", "DNA strand", "Protein"], "a": 1}, {"q": "Amino acids are joined by:", "o": ["Hydrogen bonds", "Peptide bonds", "Ionic bonds only", "Glycosidic bonds"], "a": 0}, {"q": "The first major step of translation involves:", "o": ["Initiation", "Mutation", "Replication", "Splicing"], "a": 0}, {"q": "Translation consists of:", "o": ["Initiation, elongation and termination", "Replication and mutation", "Splicing and replication only", "Transcription only"], "a": 1}, {"q": "During initiation, the ribosome recognizes the:", "o": ["Stop codon", "Start codon", "Intron", "Promoter only"], "a": 0}, {"q": "The start codon generally codes for:", "o": ["Methionine", "Glycine", "Alanine", "Valine"], "a": 1}, {"q": "During elongation, the:", "o": ["Polypeptide chain grows", "DNA is replicated", "Introns are formed", "Chromosome disappears"], "a": 0}, {"q": "Translation ends when the ribosome reaches:", "o": ["Start codon", "Stop codon", "Promoter", "Intron"], "a": 0}, {"q": "A newly synthesized protein initially exists as a:", "o": ["Polypeptide chain", "DNA molecule", "RNA molecule", "Nucleotide"], "a": 1}, {"q": "The sequence of amino acids in a protein is determined by:", "o": ["mRNA codon sequence", "Lipid sequence", "Cell membrane", "ATP"], "a": 1}, {"q": "The ribosome moves along mRNA in the:", "o": ["3′ → 5′ direction", "5′ → 3′ direction", "Both directions", "Random direction"], "a": 0}, {"q": "Protein synthesis is also known as:", "o": ["Translation", "Replication", "Transcription", "Transformation"], "a": 0}, {"q": "Gene regulation controls:", "o": ["When and how much a gene is expressed", "DNA destruction only", "Cell wall formation only", "Water absorption only"], "a": 0}, {"q": "Gene regulation is especially important because cells:", "o": ["Have different DNA in every cell", "Need different proteins at different times", "Do not contain genes", "Cannot synthesize proteins"], "a": 1}, {"q": "In prokaryotes, genes can be regulated through:", "o": ["Operons", "Nucleoli only", "Mitochondria only", "Chloroplasts only"], "a": 0}, {"q": "The operon model was proposed by:", "o": ["Jacob and Monod", "Watson and Crick", "Sutton and Boveri", "Griffith and Avery"], "a": 0}, {"q": "The lac operon is associated with metabolism of:", "o": ["Lactose", "Glucose only", "Protein", "Lipid"], "a": 0}, {"q": "An operon generally contains genes under the control of a common:", "o": ["Regulatory region", "Ribosome", "Chromosome pair", "Protein chain"], "a": 0}, {"q": "The promoter is the region where:", "o": ["RNA polymerase binds", "Ribosome is destroyed", "Protein is digested", "DNA is translated"], "a": 0}, {"q": "A regulator gene can produce a:", "o": ["Regulatory protein", "Lipid", "Sugar", "Ribosome only"], "a": 1}, {"q": "Regulation of gene expression can occur at:", "o": ["Different stages of gene expression", "Only after protein formation", "Only during cell division", "Only in mitochondria"], "a": 0}, {"q": "Gene regulation helps a cell to:", "o": ["Save energy and resources", "Stop all protein synthesis", "Destroy all DNA", "Remove chromosomes"], "a": 0}, {"q": "A mutation is a:", "o": ["Heritable change in genetic material", "Normal protein", "Type of ribosome", "Cell organelle"], "a": 0}, {"q": "Mutations may occur due to changes in:", "o": ["DNA sequence", "Cell wall only", "Cytoplasm only", "Water content"], "a": 0}, {"q": "A mutation involving a change in a single nucleotide is called a:", "o": ["Point mutation", "Chromosomal theory", "Translation", "Transcription"], "a": 1}, {"q": "Mutations can be caused by:", "o": ["Mutagens", "Ribosomes", "Codons only", "Amino acids only"], "a": 0}, {"q": "Mutations are important because they can:", "o": ["Produce genetic variation", "Always destroy organisms", "Always cause disease", "Prevent all evolution"], "a": 1}];
+const PART_SIZE = 50;
+const TOTAL_PARTS = 3;
+const TOTAL_Q = QUESTIONS.length;
+
+// ---------- Supabase ----------
+const SUPABASE_URL = 'https://ffhectlvigfdhwcuetee.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_5sxJLvZqy_Q53I0GRuefcQ_Ii1z7m9a';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function pushToSupabase(session){
+  try{
+    if(!session.supabaseId){
+      session.supabaseId = (crypto.randomUUID ? crypto.randomUUID() : (Date.now()+'-'+Math.random().toString(16).slice(2)));
+    }
+    const row = {
+      id: session.supabaseId,
+      name: session.name,
+      district: session.district,
+      email: session.email || null,
+      answers: session.answers,
+      part_results: session.partResults,
+      part_submitted: session.partSubmitted,
+      total_score: session.finalResult ? session.finalResult.totalScore : null,
+      total_percentage: session.finalResult ? session.finalResult.percentage : null,
+      total_correct: session.finalResult ? session.finalResult.totalCorrect : null,
+      total_wrong: session.finalResult ? session.finalResult.totalWrong : null,
+      total_unanswered: session.finalResult ? session.finalResult.totalUnanswered : null,
+      started_at: session.startedAt,
+      submitted_at: session.submittedAt || null
+    };
+    const { error } = await sb.from('submissions').upsert(row, { onConflict: 'id' });
+    if(error) console.error('Supabase sync failed:', error.message);
+  }catch(e){
+    console.error('Supabase sync error:', e);
+  }
+}
+
+function partRange(partIdx){
+  const start = partIdx*PART_SIZE;
+  return [start, start+PART_SIZE-1];
+}
+
+function sanitizeKey(s){
+  return s.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60) || 'student';
+}
+
+function emptySession(name, district, email){
+  return {
+    name, district, email: email || '',
+    answers: {},
+    partSubmitted: [false,false,false],
+    partResults: [null,null,null],
+    startedAt: new Date().toISOString(),
+    submittedAt: null
+  };
+}
+
+function computePartResult(session, partIdx){
+  const [start, end] = partRange(partIdx);
+  let correct=0, wrong=0, unanswered=0;
+  for(let i=start; i<=end; i++){
+    const qNo = i+1;
+    const given = session.answers[qNo];
+    if(given === undefined || given === null){ unanswered++; }
+    else if(given === QUESTIONS[i].a){ correct++; }
+    else { wrong++; }
+  }
+  const total = end-start+1;
+  return {
+    correct, wrong, unanswered, total,
+    score: correct,
+    percentage: Math.round((correct/total)*1000)/10
+  };
+}
+
+function computeFinal(session){
+  let totalScore=0, totalCorrect=0, totalWrong=0, totalUnanswered=0;
+  session.partResults.forEach(r=>{
+    if(r){ totalScore += r.score; totalCorrect += r.correct; totalWrong += r.wrong; totalUnanswered += r.unanswered; }
+  });
+  return {
+    totalScore, totalCorrect, totalWrong, totalUnanswered,
+    percentage: Math.round((totalScore/TOTAL_Q)*1000)/10
+  };
+}
+
+// ---------- storage ----------
+async function saveSession(session){
+  const key = 'mcqtest:' + sanitizeKey(session.name) + '|' + sanitizeKey(session.district);
+  try{
+    await window.storage.set(key, JSON.stringify(session), false);
+  }catch(e){ console.error('save failed', e); }
+}
+async function loadSession(name, district){
+  const key = 'mcqtest:' + sanitizeKey(name) + '|' + sanitizeKey(district);
+  try{
+    const res = await window.storage.get(key, false);
+    if(res && res.value) return JSON.parse(res.value);
+  }catch(e){ /* not found */ }
+  return null;
+}
+
+// ---------- app state ----------
+let state = {
+  screen: 'entry', // entry | test | partResult | finalResult
+  session: null,
+  activePart: 0,
+  currentQ: 0, // index within part, 0-49
+  reviewFilter: 'all',
+  reviewPart: 0,
+  confirmSubmit: false,
+  saving: false
+};
+
+const app = document.getElementById('app');
+
+function render(){
+  if(state.screen === 'loading'){ app.innerHTML = `<div class="loading">Loading your test…</div>`; return; }
+  if(state.screen === 'entry') return renderEntry();
+  if(state.screen === 'test') return renderTest();
+  if(state.screen === 'partResult') return renderPartResult();
+  if(state.screen === 'finalResult') return renderFinalResult();
+  if(state.screen === 'reviewAll') return renderReviewAll();
+}
+
+// ---------- ENTRY ----------
+function renderEntry(){
+  app.innerHTML = `
+    <div class="hero">
+      <h1>Biology — Chromosomes and DNA</h1>
+      <div class="sub">Class 12 Biology · MCQ Practice Test</div>
+      <div class="meta-row">
+        <div class="meta-chip">Total Questions: 150</div>
+        <div class="meta-chip">3 Parts × 50 MCQs</div>
+      </div>
+    </div>
+    <div class="panel">
+      <label for="fname">Full Name</label>
+      <input type="text" id="fname" placeholder="Enter your full name" value="${state.draftName||''}">
+      <label for="fdist">District</label>
+      <input type="text" id="fdist" placeholder="Enter your district" value="${state.draftDistrict||''}">
+      <label for="femail">Email <span style="font-weight:400; color:var(--ink-soft);">(optional)</span></label>
+      <input type="text" id="femail" placeholder="Enter your email address" value="${state.draftEmail||''}">
+      <button class="btn-primary" id="startBtn">Start Test</button>
+      <div class="small-note" style="margin-top:10px;">If you already started this test with the same name and district, your progress will resume automatically.</div>
+    </div>
+  `;
+  document.getElementById('startBtn').onclick = onStart;
+  document.getElementById('fname').addEventListener('input', e=> state.draftName = e.target.value);
+  document.getElementById('fdist').addEventListener('input', e=> state.draftDistrict = e.target.value);
+  document.getElementById('femail').addEventListener('input', e=> state.draftEmail = e.target.value);
+}
+
+async function onStart(){
+  const name = document.getElementById('fname').value.trim();
+  const district = document.getElementById('fdist').value.trim();
+  const email = document.getElementById('femail').value.trim();
+  if(!name || !district){
+    alert('Please enter both your full name and district to begin.');
+    return;
+  }
+  state.screen = 'loading'; render();
+  let session = await loadSession(name, district);
+  if(!session){
+    session = emptySession(name, district, email);
+    await saveSession(session);
+  } else if(email && !session.email){
+    session.email = email;
+    await saveSession(session);
+  }
+  pushToSupabase(session); // fire-and-forget: ensure the row exists remotely for the dashboard
+  state.session = session;
+  if(session.submittedAt){
+    state.screen = 'finalResult';
+  } else {
+    const nextPart = session.partSubmitted.findIndex(s=>!s);
+    state.activePart = nextPart === -1 ? TOTAL_PARTS-1 : nextPart;
+    if(session.partSubmitted[state.activePart]){
+      // all submitted edge case
+      state.screen = 'finalResult';
+    } else {
+      state.currentQ = 0;
+      state.screen = 'test';
+    }
+  }
+  render();
+}
+
+// ---------- TEST ----------
+function partAnsweredCount(session, partIdx){
+  const [start,end] = partRange(partIdx);
+  let c=0;
+  for(let i=start;i<=end;i++){ if(session.answers[i+1]!==undefined) c++; }
+  return c;
+}
+
+function renderTest(){
+  const session = state.session;
+  const partIdx = state.activePart;
+  const [start,end] = partRange(partIdx);
+  const qIndex = start + state.currentQ; // 0-based overall index
+  const q = QUESTIONS[qIndex];
+  const qNo = qIndex+1;
+  const answeredCount = partAnsweredCount(session, partIdx);
+  const totalInPart = end-start+1;
+  const given = session.answers[qNo];
+
+  const nav = [];
+  for(let i=0;i<totalInPart;i++){
+    const thisQNo = start+i+1;
+    const cls = ['qnav-btn'];
+    if(session.answers[thisQNo]!==undefined) cls.push('answered');
+    if(i===state.currentQ) cls.push('current');
+    nav.push(`<button class="${cls.join(' ')}" data-nav="${i}">${i+1}</button>`);
+  }
+
+  app.innerHTML = `
+    <div class="panel">
+      <div class="part-header">
+        <h2 style="margin:0;">Part ${partIdx+1} <span style="color:var(--ink-soft); font-weight:400; font-size:.9rem;">(Q ${start+1}–${end+1})</span></h2>
+        <span class="locked-tag">${session.name}</span>
+      </div>
+      <div class="progress-label"><span>Part ${partIdx+1}: ${answeredCount}/${totalInPart} answered</span><span>${Math.round(answeredCount/totalInPart*100)}%</span></div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${answeredCount/totalInPart*100}%"></div></div>
+      <div class="qnav">${nav.join('')}</div>
+    </div>
+
+    <div class="panel qcard">
+      <div class="qnum">QUESTION ${qNo} OF ${TOTAL_Q}</div>
+      <div class="qtext">${q.q}</div>
+      <div id="opts">
+        ${q.o.map((opt,i)=>`
+          <div class="opt ${given===i?'selected':''}" data-opt="${i}">
+            <span class="opt-letter">${String.fromCharCode(65+i)}</span>
+            <span>${opt}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="qnav-footer">
+        <button class="btn-secondary" id="prevBtn" ${state.currentQ===0?'disabled':''}>← Previous</button>
+        <button class="btn-secondary" id="nextBtn" ${state.currentQ===totalInPart-1?'disabled':''}>Next →</button>
+      </div>
+    </div>
+
+    <div class="sticky-bar">
+      <button class="btn-primary" id="submitPartBtn">Submit Part ${partIdx+1}</button>
+    </div>
+
+    ${state.confirmSubmit ? renderConfirmModal(partIdx, answeredCount, totalInPart) : ''}
+  `;
+
+  document.querySelectorAll('.qnav-btn').forEach(btn=>{
+    btn.onclick = ()=>{ state.currentQ = parseInt(btn.dataset.nav); render(); };
+  });
+  document.querySelectorAll('.opt').forEach(el=>{
+    el.onclick = async ()=>{
+      const i = parseInt(el.dataset.opt);
+      session.answers[qNo] = i;
+      render();
+      await saveSession(session);
+    };
+  });
+  const prevBtn = document.getElementById('prevBtn');
+  if(prevBtn) prevBtn.onclick = ()=>{ if(state.currentQ>0){ state.currentQ--; render(); } };
+  const nextBtn = document.getElementById('nextBtn');
+  if(nextBtn) nextBtn.onclick = ()=>{ if(state.currentQ<totalInPart-1){ state.currentQ++; render(); } };
+  document.getElementById('submitPartBtn').onclick = ()=>{ state.confirmSubmit = true; render(); };
+
+  if(state.confirmSubmit){
+    document.getElementById('cancelSubmit').onclick = ()=>{ state.confirmSubmit=false; render(); };
+    document.getElementById('confirmSubmitBtn').onclick = async ()=>{ await doSubmitPart(partIdx); };
+  }
+}
+
+function renderConfirmModal(partIdx, answered, total){
+  const unanswered = total-answered;
+  return `
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h3>Submit Part ${partIdx+1}?</h3>
+        <p>You have answered ${answered} of ${total} questions in this part${unanswered>0?` — ${unanswered} question(s) will be left unanswered`:''}. Once submitted, you cannot change your answers for this part.</p>
+        <div class="modal-actions">
+          <button class="btn-secondary" id="cancelSubmit">Cancel</button>
+          <button class="btn-primary" id="confirmSubmitBtn">Submit</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function doSubmitPart(partIdx){
+  const session = state.session;
+  if(session.partSubmitted[partIdx]) return; // prevent duplicate
+  const result = computePartResult(session, partIdx);
+  session.partSubmitted[partIdx] = true;
+  session.partResults[partIdx] = result;
+  if(partIdx === TOTAL_PARTS-1){
+    session.submittedAt = new Date().toISOString();
+    session.finalResult = computeFinal(session);
+  }
+  await saveSession(session);
+  await pushToSupabase(session); // save this part's (and, on part 3, the final) result to Supabase
+  state.confirmSubmit = false;
+  state.screen = 'partResult';
+  render();
+}
+
+// ---------- PART RESULT ----------
+function renderPartResult(){
+  const session = state.session;
+  const partIdx = state.activePart;
+  const r = session.partResults[partIdx];
+  const isLast = partIdx === TOTAL_PARTS-1;
+  app.innerHTML = `
+    <div class="hero">
+      <h1>Part ${partIdx+1} Result</h1>
+      <div class="sub">${session.name} · ${session.district}</div>
+    </div>
+    <div class="panel center-text">
+      <div class="pct-badge">${r.percentage}%</div>
+      <div class="small-note">Score: ${r.score} / ${r.total}</div>
+      <div class="stat-grid">
+        <div class="stat-box correct"><div class="num">${r.correct}</div><div class="lbl">Correct</div></div>
+        <div class="stat-box wrong"><div class="num">${r.wrong}</div><div class="lbl">Wrong</div></div>
+        <div class="stat-box"><div class="num">${r.unanswered}</div><div class="lbl">Unanswered</div></div>
+        <div class="stat-box"><div class="num">${r.total}</div><div class="lbl">Total Questions</div></div>
+      </div>
+      <button class="btn-outline btn-small" id="reviewPartBtn">Review Answers — Part ${partIdx+1}</button>
+    </div>
+    <button class="btn-primary" id="continueBtn">${isLast ? 'See Final Combined Result' : 'Continue to Part '+(partIdx+2)}</button>
+  `;
+  document.getElementById('reviewPartBtn').onclick = ()=>{
+    state.reviewPart = partIdx;
+    state.reviewFilter = 'all';
+    state.screen = 'reviewAll';
+    state.reviewSinglePart = true;
+    render();
+  };
+  document.getElementById('continueBtn').onclick = ()=>{
+    if(isLast){
+      state.screen = 'finalResult';
+    } else {
+      state.activePart = partIdx+1;
+      state.currentQ = 0;
+      state.screen = 'test';
+    }
+    render();
+  };
+}
+
+// ---------- FINAL RESULT ----------
+function renderFinalResult(){
+  const session = state.session;
+  const f = session.finalResult || computeFinal(session);
+  app.innerHTML = `
+    <div class="hero">
+      <h1>Final Result</h1>
+      <div class="sub">Biology — Chromosomes and DNA · 150 MCQs</div>
+    </div>
+    <div class="panel">
+      <div class="meta-row">
+        <div class="meta-chip">Name: ${session.name}</div>
+        <div class="meta-chip">District: ${session.district}</div>
+        ${session.email ? `<div class="meta-chip">Email: ${session.email}</div>` : ''}
+      </div>
+      <div class="center-text" style="margin-top:16px;">
+        <div class="pct-badge" style="font-size:1.4rem;">${f.percentage}%</div>
+        <div class="small-note">Total Score: ${f.totalScore} / ${TOTAL_Q}</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box correct"><div class="num">${f.totalCorrect}</div><div class="lbl">Total Correct</div></div>
+        <div class="stat-box wrong"><div class="num">${f.totalWrong}</div><div class="lbl">Total Wrong</div></div>
+        <div class="stat-box"><div class="num">${f.totalUnanswered}</div><div class="lbl">Total Unanswered</div></div>
+        <div class="stat-box"><div class="num">${TOTAL_Q}</div><div class="lbl">Total Questions</div></div>
+      </div>
+      <hr class="divider">
+      <h3 style="font-size:1rem;">Part-wise Scores</h3>
+      <div class="part-cards">
+        ${session.partResults.map((r,i)=>`
+          <div class="part-card"><b>Part ${i+1}</b> (Q${i*50+1}–${i*50+50}): <b>${r.score}/${r.total}</b> &nbsp;·&nbsp; ${r.percentage}%
+          &nbsp;·&nbsp; ✅ ${r.correct} &nbsp; ❌ ${r.wrong} &nbsp; ⚪ ${r.unanswered}</div>
+        `).join('')}
+      </div>
+    </div>
+    <button class="btn-primary" id="reviewAllBtn">Review All Answers</button>
+    <div class="small-note center-text" style="margin-top:14px;">Submitted ${new Date(session.submittedAt).toLocaleString()}</div>
+  `;
+  document.getElementById('reviewAllBtn').onclick = ()=>{
+    state.reviewSinglePart = false;
+    state.reviewFilter = 'all';
+    state.reviewPartFilter = 'all';
+    state.screen = 'reviewAll';
+    render();
+  };
+}
+
+// ---------- REVIEW ----------
+function renderReviewAll(){
+  const session = state.session;
+  const single = state.reviewSinglePart;
+  const parts = single ? [state.reviewPart] : [0,1,2].filter(p=>session.partSubmitted[p]);
+
+  const filters = [
+    {id:'all', label:'All Questions'},
+    {id:'correct', label:'Correct Answers'},
+    {id:'wrong', label:'Wrong Answers'},
+    {id:'unanswered', label:'Unanswered'}
+  ];
+
+  let itemsHtml = '';
+  parts.forEach(partIdx=>{
+    const [start,end] = partRange(partIdx);
+    let partItems = '';
+    for(let i=start;i<=end;i++){
+      const qNo = i+1;
+      const q = QUESTIONS[i];
+      const given = session.answers[qNo];
+      let status = 'blank';
+      if(given!==undefined){ status = given===q.a ? 'correct' : 'wrong'; }
+      if(state.reviewFilter!=='all' && state.reviewFilter!==status) continue;
+      const badge = status==='correct' ? '<span class="review-badge correct">✅ Correct</span>' :
+                    status==='wrong' ? '<span class="review-badge wrong">❌ Wrong</span>' :
+                    '<span class="review-badge blank">⚪ Unanswered</span>';
+      partItems += `
+        <div class="review-item">
+          <div class="qnum">QUESTION ${qNo}</div>
+          <div class="rq">${q.q}</div>
+          ${badge}
+          <div>
+            ${q.o.map((opt,oi)=>{
+              let cls='review-opt';
+              if(oi===q.a) cls+=' is-correct';
+              else if(oi===given) cls+=' is-wrong';
+              let tag='';
+              if(oi===q.a) tag=' (Correct answer)';
+              else if(oi===given) tag=' (Your answer)';
+              return `<div class="${cls}">${String.fromCharCode(65+oi)}. ${opt}${tag}</div>`;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+    if(!single){
+      itemsHtml += `<h3 style="margin-top:20px;">Part ${partIdx+1}: Questions ${start+1}–${end+1}</h3>`;
+    }
+    itemsHtml += partItems || `<div class="small-note">No questions match this filter in this part.</div>`;
+  });
+
+  app.innerHTML = `
+    <div class="hero">
+      <h1>${single ? 'Review — Part '+(state.reviewPart+1) : 'Review All Answers'}</h1>
+      <div class="sub">${session.name} · ${session.district}</div>
+    </div>
+    <div class="filter-row">
+      ${filters.map(f=>`<button class="filter-btn ${state.reviewFilter===f.id?'active':''}" data-f="${f.id}">${f.label}</button>`).join('')}
+    </div>
+    ${itemsHtml}
+    <button class="btn-secondary" id="backBtn" style="margin-top:16px;">← Back</button>
+  `;
+  document.querySelectorAll('.filter-btn').forEach(b=>{
+    b.onclick = ()=>{ state.reviewFilter = b.dataset.f; render(); };
+  });
+  document.getElementById('backBtn').onclick = ()=>{
+    state.screen = single ? 'partResult' : 'finalResult';
+    render();
+  };
+}
+
+render();
+</script>
+</body>
+</html>
